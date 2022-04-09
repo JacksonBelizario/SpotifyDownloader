@@ -1,43 +1,50 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout
+    view="lHh lpr lFf"
+    container
+    style="height: 400px"
+    class="shadow-2 rounded-borders"
+  >
     <q-header elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
+      <q-bar class="q-electron-drag">
+        <q-icon name="mdi-spotify" />
 
-        <q-toolbar-title>
-          Quasar App
-        </q-toolbar-title>
+        <div class="q-electron-drag--exception cursor-pointer non-selectable">
+          File
+          <q-menu auto-close>
+            <q-list dense style="min-width: 100px">
+              <q-item clickable>
+                <q-item-section>Settings</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </div>
 
-        <div>Quasar v{{ $q.version }}</div>
-      </q-toolbar>
+        <div class="q-electron-drag--exception cursor-pointer non-selectable">
+          Help
+          <q-menu auto-close>
+            <q-list dense style="min-width: 100px">
+              <q-item clickable>
+                <q-item-section>Homepage</q-item-section>
+              </q-item>
+              <q-separator />
+              <q-item clickable @click="about">
+                <q-item-section>About</q-item-section>
+              </q-item>
+            </q-list>
+          </q-menu>
+        </div>
+
+        <q-space />
+
+        <div>Spotify Downloader v{{ version }}</div>
+
+        <q-space />
+
+        <q-btn dense flat icon="mdi-minus" @click="minimize" />
+        <q-btn dense flat icon="mdi-close" @click="closeApp" />
+      </q-bar>
     </q-header>
-
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Essential Links
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
 
     <q-page-container>
       <router-view />
@@ -46,71 +53,32 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
-import EssentialLink from 'components/EssentialLink.vue';
-
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
-];
+import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'MainLayout',
 
-  components: {
-    EssentialLink
-  },
-
-  setup () {
-    const leftDrawerOpen = ref(false)
-
+  setup() {
     return {
-      essentialLinks: linksList,
-      leftDrawerOpen,
-      toggleLeftDrawer () {
-        leftDrawerOpen.value = !leftDrawerOpen.value
-      }
-    }
-  }
+      version: window.header.version,
+      minimize() {
+        if (process.env.MODE === 'electron') {
+          window.header.minimize();
+        }
+      },
+
+      closeApp() {
+        if (process.env.MODE === 'electron') {
+          window.header.close();
+        }
+      },
+
+      about() {
+        if (process.env.MODE === 'electron') {
+          window.header.about();
+        }
+      },
+    };
+  },
 });
 </script>
