@@ -19,7 +19,7 @@ const {
     TIMEOUT_RETRY,
   },
   //   INPUT_TYPES,
-  //   MAX_LIMIT_DEFAULT,
+  MAX_LIMIT_DEFAULT,
   SERVER: { PORT, HOST, CALLBACK_URI },
 } = Constants;
 
@@ -140,6 +140,38 @@ const parseTrack = (track) => {
     id: track.id,
   };
 };
+
+export async function extractPlaylist(playlistId) {
+  const playlistInfo = await callSpotifyApi(
+    async () => (await spotifyApi.getPlaylist(playlistId, { limit: 1 })).body
+  );
+  const tracks = [];
+  let playlistData;
+  let offset = 0;
+  do {
+    playlistData = await callSpotifyApi(
+      async () =>
+        (
+          await spotifyApi.getPlaylistTracks(playlistId, {
+            limit: MAX_LIMIT_DEFAULT,
+            offset: offset,
+          })
+        ).body
+    );
+    if (!offset) {
+      logger(`extracting ${playlistData.total} tracks`);
+    }
+    tracks.push(...playlistData.items);
+    offset += MAX_LIMIT_DEFAULT;
+  } while (tracks.length < playlistData.total);
+
+  return {
+    name: `${playlistInfo.name} - ${playlistInfo.owner.display_name}`,
+    items: tracks
+      .filter((item) => item.track)
+      .map((item) => parseTrack(item.track)),
+  };
+}
 
 function chunkArray(array, chunkSize) {
   const chunks = [];

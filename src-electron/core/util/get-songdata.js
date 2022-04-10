@@ -3,7 +3,7 @@ import {
   //   extractAlbum,
   //   extractArtist,
   //   extractArtistAlbums,
-  //   extractPlaylist,
+  extractPlaylist,
   //   extractEpisodes,
   //   extractShowEpisodes,
   //   extractSavedShows,
@@ -14,6 +14,10 @@ import {
 
 export async function getTrack(url) {
   return (await extractTracks([getID(url)]))[0];
+}
+
+export async function getPlaylist(url) {
+  return await extractPlaylist(getID(url));
 }
 
 const getID = (url) => {

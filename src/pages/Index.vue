@@ -26,23 +26,19 @@
         <q-separator />
       </div>
       <div class="col-12">
-        <q-card>
-          <q-card-section>
-            <LoggerComponent />
-          </q-card-section>
-        </q-card>
+        <MusicList />
       </div>
     </div>
   </q-page>
 </template>
 
 <script lang="ts">
-import LoggerComponent from 'components/LoggerComponent.vue';
+import MusicList from 'components/MusicList.vue';
 import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
   name: 'IndexPage',
-  components: { LoggerComponent },
+  components: { MusicList },
   setup() {
     const url = ref<string | null>(null);
     return {
@@ -50,7 +46,7 @@ export default defineComponent({
 
       queryUrl() {
         if (process.env.MODE === 'electron') {
-          window.downloader.queryUrl(url.value);
+          window.downloader.queryUrl(url.value || '');
         }
       },
     };

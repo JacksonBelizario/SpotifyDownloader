@@ -18,6 +18,13 @@
           Settings
         </div>
 
+        <div
+          @click="$router.push('/logs')"
+          class="q-electron-drag--exception cursor-pointer"
+        >
+          Logs
+        </div>
+
         <div class="q-electron-drag--exception cursor-pointer non-selectable">
           Help
           <q-menu auto-close>
