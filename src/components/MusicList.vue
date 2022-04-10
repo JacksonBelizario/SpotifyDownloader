@@ -54,7 +54,7 @@
       </q-td>
     </template>
     <template #bottom>
-      <q-btn outline label="Cancel" />
+      <q-btn outline label="Cancel" @click="cancel" />
       <q-space />
       <q-btn outline color="primary" label="Download" />
     </template>
@@ -142,6 +142,10 @@ export default defineComponent({
           : `${selected.value.length} record${
               selected.value.length > 1 ? 's' : ''
             } selected of ${rows.value.length}`;
+      },
+
+      cancel() {
+        rows.value = [];
       },
     };
   },

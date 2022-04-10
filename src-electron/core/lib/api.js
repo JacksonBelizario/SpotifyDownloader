@@ -173,6 +173,80 @@ export async function extractPlaylist(playlistId) {
   };
 }
 
+export async function extractAlbum(albumId) {
+  const albumInfo = await callSpotifyApi(
+    async () => (await spotifyApi.getAlbum(albumId, { limit: 1 })).body
+  );
+  const tracks = [];
+  let offset = 0;
+  let albumTracks;
+  do {
+    albumTracks = await callSpotifyApi(
+      async () =>
+        (
+          await spotifyApi.getAlbumTracks(albumId, {
+            limit: MAX_LIMIT_DEFAULT,
+            offset: offset,
+          })
+        ).body
+    );
+    if (!offset) {
+      logger(`extracting ${albumTracks.total} tracks`);
+    }
+    tracks.push(...albumTracks.items);
+    offset += MAX_LIMIT_DEFAULT;
+  } while (tracks.length < albumTracks.total);
+
+  const trackParsed = (
+    await extractTracks(
+      tracks.filter((track) => track).map((track) => track.id)
+    )
+  ).map((track) => {
+    track.artists = [albumInfo.artists[0].name, ...track.artists];
+    return track;
+  });
+
+  return {
+    name: `${albumInfo.name} - ${albumInfo.label}`,
+    items: trackParsed,
+  };
+}
+
+export async function extractArtist(artistId) {
+  const data = await callSpotifyApi(
+    async () => (await spotifyApi.getArtist(artistId)).body
+  );
+  return {
+    id: data.id,
+    name: data.name,
+    href: data.href,
+  };
+}
+
+export async function extractArtistAlbums(artistId) {
+  const albums = [];
+  let offset = 0;
+  let artistAlbums;
+  do {
+    artistAlbums = await callSpotifyApi(
+      async () =>
+        (
+          await spotifyApi.getArtistAlbums(artistId, {
+            limit: MAX_LIMIT_DEFAULT,
+            offset: offset,
+          })
+        ).body
+    );
+    if (!offset) {
+      logger(`extracting ${artistAlbums.total} albums`);
+    }
+    albums.push(...artistAlbums.items);
+    offset += MAX_LIMIT_DEFAULT;
+  } while (albums.length < artistAlbums.total);
+  // remove albums that are not direct artist albums
+  return albums;
+}
+
 function chunkArray(array, chunkSize) {
   const chunks = [];
   for (let i = 0; i < array.length; i += chunkSize) {

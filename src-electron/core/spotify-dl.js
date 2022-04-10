@@ -9,7 +9,12 @@ import getLinks from '../../node_modules/spotify-dl/util/get-link.js';
 import urlParser from '../../node_modules/spotify-dl/util/url-parser.js';
 import logger from './util/logger';
 
-import { getTrack, getPlaylist } from './util/get-songdata.js';
+import {
+  getTrack,
+  getPlaylist,
+  getAlbum,
+  getArtistAlbums,
+} from './util/get-songdata.js';
 
 const {
   INPUT_TYPES,
@@ -112,22 +117,22 @@ async function queryUrl(URL) {
       lists.push(list);
       break;
     }
-    // case INPUT_TYPES.SONG.ALBUM: {
-    //   const list = await getAlbum(URL);
-    //   list.type = type;
-    //   lists.push(list);
-    //   break;
-    // }
-    // case INPUT_TYPES.SONG.ARTIST: {
-    //   const artistAlbumInfos = await getArtistAlbums(URL);
-    //   lists.push(
-    //     ...artistAlbumInfos.map((list) => {
-    //       list.type = type;
-    //       return list;
-    //     })
-    //   );
-    //   break;
-    // }
+    case INPUT_TYPES.SONG.ALBUM: {
+      const list = await getAlbum(URL);
+      list.type = type;
+      lists.push(list);
+      break;
+    }
+    case INPUT_TYPES.SONG.ARTIST: {
+      const artistAlbumInfos = await getArtistAlbums(URL);
+      lists.push(
+        ...artistAlbumInfos.map((list) => {
+          list.type = type;
+          return list;
+        })
+      );
+      break;
+    }
     // case INPUT_TYPES.EPISODE.EPISODE: {
     //   const episode = await getEpisode(URL);
     //   if (episode) {
@@ -148,6 +153,7 @@ async function queryUrl(URL) {
     //   lists.push(list);
     //   break;
     // }
+
     // case INPUT_TYPES.EPISODE.SAVED_SHOWS: {
     //   const savedShowsInfo = await getSavedShows();
     //   lists.push(
@@ -184,6 +190,7 @@ async function queryUrl(URL) {
     //   lists.push(list);
     //   break;
     // }
+
     // case INPUT_TYPES.YOUTUBE: {
     //   lists.push({
     //     items: [
