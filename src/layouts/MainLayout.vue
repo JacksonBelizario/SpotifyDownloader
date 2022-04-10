@@ -1,30 +1,28 @@
 <template>
-  <q-layout
-    view="lHh lpr lFf"
-    container
-    style="height: 400px"
-    class="shadow-2 rounded-borders"
-  >
+  <q-layout view="lHh lpr lFf" class="main-window shadow-2">
     <q-header elevated>
-      <q-bar class="q-electron-drag">
+      <q-bar class="q-electron-drag text-black">
         <q-icon name="mdi-spotify" />
 
-        <div class="q-electron-drag--exception cursor-pointer non-selectable">
-          File
-          <q-menu auto-close>
-            <q-list dense style="min-width: 100px">
-              <q-item clickable>
-                <q-item-section>Settings</q-item-section>
-              </q-item>
-            </q-list>
-          </q-menu>
+        <div
+          @click="$router.push('/')"
+          class="q-electron-drag--exception cursor-pointer"
+        >
+          Home
+        </div>
+
+        <div
+          @click="$router.push('/settings')"
+          class="q-electron-drag--exception cursor-pointer"
+        >
+          Settings
         </div>
 
         <div class="q-electron-drag--exception cursor-pointer non-selectable">
           Help
           <q-menu auto-close>
             <q-list dense style="min-width: 100px">
-              <q-item clickable>
+              <q-item clickable @click="teste">
                 <q-item-section>Homepage</q-item-section>
               </q-item>
               <q-separator />
@@ -45,12 +43,23 @@
         <q-btn dense flat icon="mdi-close" @click="closeApp" />
       </q-bar>
     </q-header>
-
-    <q-page-container>
-      <router-view />
-    </q-page-container>
+    <main>
+      <q-page-container>
+        <router-view />
+      </q-page-container>
+    </main>
   </q-layout>
 </template>
+
+<style scoped lang="scss">
+.main-window {
+  height: 100vh;
+}
+
+main {
+  height: calc(100vh - 32px);
+}
+</style>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
@@ -60,7 +69,7 @@ export default defineComponent({
 
   setup() {
     return {
-      version: window.header.version,
+      version: process.env.MODE === 'electron' ? window.header.version : '',
       minimize() {
         if (process.env.MODE === 'electron') {
           window.header.minimize();

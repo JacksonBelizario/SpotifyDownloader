@@ -3,6 +3,8 @@ import { initialize, enable } from '@electron/remote/main';
 import path from 'path';
 import os from 'os';
 
+import spotifyDownloader from './core/spotify-dl';
+
 initialize();
 
 // needed in case process is undefined under Linux
@@ -52,6 +54,8 @@ function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
+
+  spotifyDownloader.listen();
 }
 
 app.whenReady().then(createWindow);

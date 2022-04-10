@@ -14,8 +14,11 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@quasar/extras": "^1.0.0",
+    "fluent-ffmpeg": "^2.1.2",
     "quasar": "^2.6.0",
+    "spotify-dl": "^1.0.7",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0"
   },
@@ -26,6 +29,7 @@
     "@typescript-eslint/parser": "^5.10.0",
     "autoprefixer": "^10.4.2",
     "electron": "^18.0.3",
+    "electron-builder": "^22.4.0",
     "electron-packager": "^15.2.0",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.1.0",
