@@ -50,8 +50,17 @@
     <template #body-cell-options="props">
       <q-td :props="props">
         <q-btn flat round icon="mdi-file-music-outline" />
-        <q-btn flat round color="info" icon="mdi-play-circle-outline " />
+        <q-btn flat round color="accent" icon="mdi-play-circle-outline " />
       </q-td>
+    </template>
+
+    <template #no-data="{}">
+      <div class="full-width row flex-center text-accent q-gutter-sm">
+        <q-icon size="2em" name="mdi-lightbulb-on-outline " />
+        <span>
+          Enter Track, Playlist, Album and Artist Spotify URL to start download
+        </span>
+      </div>
     </template>
     <template #bottom>
       <q-btn outline label="Cancel" @click="cancel" />

@@ -4,10 +4,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { setCssVar } from 'quasar';
+import { useQuasar, setCssVar } from 'quasar';
 
 setCssVar('primary', '#1ed760');
-import { useQuasar } from 'quasar';
+setCssVar('accent', '#00c853');
 
 export default defineComponent({
   name: 'App',
