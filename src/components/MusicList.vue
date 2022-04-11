@@ -32,7 +32,7 @@
         </q-item>
       </q-td>
     </template>
-    <template #body-cell-status="props">
+    <template #body-cell-progress="props">
       <q-td :props="props">
         <q-circular-progress
           show-value
@@ -65,7 +65,13 @@
     <template #bottom>
       <q-btn outline label="Cancel" @click="cancel" />
       <q-space />
-      <q-btn outline color="primary" label="Download" />
+      <q-btn
+        outline
+        color="primary"
+        label="Download"
+        :disabled="selected.length === 0"
+        @click="download"
+      />
     </template>
   </q-table>
 </template>
@@ -73,7 +79,7 @@
 <style lang="scss">
 .sticky-table {
   /* height or max-height is important */
-  height: calc(100vh - 121px);
+  height: calc(100vh - 141px);
 
   .q-table__top,
   .q-table__bottom,
@@ -98,7 +104,7 @@
 </style>
 
 <script>
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, unref } from 'vue';
 
 const columns = [
   {
@@ -111,10 +117,10 @@ const columns = [
     sortable: true,
   },
   {
-    name: 'status',
+    name: 'progress',
     align: 'center',
     label: 'Status',
-    field: 'status',
+    field: 'progress',
     headerStyle: 'max-width: 100px !important',
     style: 'max-width: 100px !important',
   },
@@ -135,8 +141,21 @@ export default defineComponent({
 
     onMounted(() => {
       window.app.onMusicList((musicList) => {
-        console.log({ musicList });
-        rows.value.push(...musicList);
+        for (let music of musicList) {
+          if (!rows.value.some(({ id }) => id === music.id)) {
+            rows.value.push(music);
+          }
+        }
+      });
+
+      window.app.onDownloadProgress((itemId, progress) => {
+        const idx = rows.value.findIndex(({ id }) => id === itemId);
+        if (idx > -1) {
+          rows.value.splice(idx, 1, {
+            ...rows.value[idx],
+            progress,
+          });
+        }
       });
     });
 
@@ -155,6 +174,14 @@ export default defineComponent({
 
       cancel() {
         rows.value = [];
+      },
+
+      download() {
+        if (process.env.MODE === 'electron') {
+          window.downloader.downloadList(
+            JSON.parse(JSON.stringify(selected.value))
+          );
+        }
       },
     };
   },

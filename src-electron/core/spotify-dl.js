@@ -36,19 +36,17 @@ const itemOutputDir = (item) => {
       );
 };
 
-const downloadList = async (list) => {
-  list.name = list.name.replace('/', '-');
-  const totalItems = list.items.length;
-  logger(`Downloading: ${list.name}`);
+const downloadList = async (items) => {
+  const totalItems = items.length;
   logger(`Total Items: ${totalItems}`);
   let currentCount = 0;
-  for (const nextItem of list.items) {
+  for (const nextItem of items) {
     currentCount++;
     const itemDir = itemOutputDir(nextItem);
     // const cached = findId(nextItem.id, itemOutputDir(nextItem));
     const cached = false;
     if (!cached) {
-      // const itemId = nextItem.id;
+      const itemId = nextItem.id;
       const itemName = nextItem.name;
       const albumName = nextItem.album_name;
       const artistName = nextItem.artists[0];
@@ -68,7 +66,7 @@ const downloadList = async (list) => {
             albumName,
             artistName,
             extraSearch,
-            type: list.type,
+            // type: list.type,
           });
 
       const fileNameCleaned = cleanOutputPath(itemName) || '_';
@@ -76,9 +74,12 @@ const downloadList = async (list) => {
       const outputFilePath = path.resolve(itemDir, `${fileNameCleaned}.mp3`);
       //create the dir if it doesn't exist
       fs.mkdirSync(itemDir, { recursive: true });
-      const downloadSuccessful = await downloader(ytLinks, outputFilePath);
+      const downloadSuccessful = await downloader(
+        itemId,
+        ytLinks,
+        outputFilePath
+      );
       logger({ ytLinks, outputFilePath, downloadSuccessful });
-      logger({ Success: downloadSuccessful });
       if (downloadSuccessful) {
         await mergeMetadata(outputFilePath, nextItem);
         // writeId(itemDir, itemId);
@@ -87,8 +88,8 @@ const downloadList = async (list) => {
     }
     nextItem.cached = true;
   }
-  logger(`Finished processing ${list.name}!\n`);
-  return list;
+  logger(`Finished processing ${totalItems}!\n`);
+  return items;
 };
 
 async function queryUrl(URL) {
@@ -222,15 +223,6 @@ async function queryUrl(URL) {
     'music-list',
     lists.flatMap((x) => x.items)
   );
-
-  // for (const [x, list] of lists.entries()) {
-  //   logger(`Starting download of list ${x + 1}/${lists.length}`);
-  //   const downloadResult = await downloadList(list);
-
-  //   listResults.push(downloadResult);
-
-  //   logger({ list, listResults });
-  // }
 }
 
 /**
@@ -239,5 +231,8 @@ async function queryUrl(URL) {
 export default {
   listen() {
     ipcMain.handle('queryUrl', (_event, url) => queryUrl(url));
+    ipcMain.handle('downloadList', (_event, list) => {
+      downloadList(list);
+    });
   },
 };

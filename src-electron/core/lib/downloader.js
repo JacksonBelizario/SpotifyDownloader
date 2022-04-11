@@ -3,6 +3,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
 import fs from 'fs';
 import { SponsorBlock } from 'sponsorblock-api';
+import { BrowserWindow } from 'electron';
 
 import Config from '../../../node_modules/spotify-dl/config.js';
 import Constants from '../../../node_modules/spotify-dl/util/constants.js';
@@ -77,13 +78,16 @@ const sponsorComplexFilter = async (link) => {
   return complexFilter;
 };
 
-const progressFunction = (_, downloaded, total) => {
+const progressFunction = (id, downloaded, total) => {
   const downloadedMb = (downloaded / 1024 / 1024).toFixed(2);
   const toBeDownloadedMb = (total / 1024 / 1024).toFixed(2);
-  const downloadText = `Downloaded ${downloadedMb}/${toBeDownloadedMb} MB`;
   if (isTTY || downloadedMb % 1 == 0 || toBeDownloadedMb == downloadedMb) {
-    // updateSpinner(downloadText);
-    logger({ downloadText });
+    const percentual = +((downloadedMb * 100) / toBeDownloadedMb).toFixed(1);
+
+    const win =
+      BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+
+    win.webContents.send('download-progress', id, percentual);
   }
 };
 
@@ -117,7 +121,7 @@ const getYoutubeDLConfig = () => {
  * @param {array} youtubeLinks array of links of youtube videos
  * @param {string} output path/name of file to be downloaded(songname.mp3)
  */
-const downloader = async (youtubeLinks, output) => {
+const downloader = async (id, youtubeLinks, output) => {
   let attemptCount = 0;
   let downloadSuccess = false;
   while (attemptCount < youtubeLinks.length && !downloadSuccess) {
@@ -127,7 +131,9 @@ const downloader = async (youtubeLinks, output) => {
 
     const doDownload = (resolve, reject) => {
       const download = ytdl(link, getYoutubeDLConfig());
-      download.on('progress', progressFunction);
+      download.on('progress', (_, downloaded, total) =>
+        progressFunction(id, downloaded, total)
+      );
       const ffmpegCommand = ffmpeg({ timeout: TIMEOUT_MINUTES * 60 });
       if (complexFilter) {
         ffmpegCommand.complexFilter(complexFilter).map('[outa]');
