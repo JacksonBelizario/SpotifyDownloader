@@ -1,18 +1,19 @@
 <template>
   <q-table
-    v-model:selected="selected"
+    v-model:selected="track.rawSelected"
     class="sticky-table"
     :rows="track.tracks"
     :columns="columns"
     row-key="name"
-    :selected-rows-label="getSelectedString"
     selection="multiple"
     dense
     :rows-per-page-options="[0]"
   >
+    <template #header-selection="" />
+    <template #body-selection="" />
     <template #body-cell-name="props">
       <q-td :props="props">
-        <q-item class="q-mb-sm">
+        <q-item class="q-px-none">
           <q-item-section v-if="props.row.cover_url" avatar>
             <q-avatar>
               <img :src="props.row.cover_url" />
@@ -35,22 +36,33 @@
     <template #body-cell-progress="props">
       <q-td :props="props">
         <q-circular-progress
+          v-if="props.row.downloading"
           show-value
           font-size="8px"
           :value="props.value"
           size="35px"
           :thickness="0.15"
-          color="orange"
+          :color="props.value === 100 ? 'primary' : 'orange'"
           track-color="grey-3"
         >
           {{ props.value }}%
         </q-circular-progress>
       </q-td>
     </template>
+    <template #header-cell-options="props">
+      <q-th :props="props">
+        <q-checkbox v-model="props.selected" />
+      </q-th>
+    </template>
     <template #body-cell-options="props">
       <q-td :props="props">
-        <q-btn flat round icon="mdi-file-music-outline" />
-        <q-btn flat round color="accent" icon="mdi-play-circle-outline " />
+        <template v-if="!props.row.downloading">
+          <q-checkbox v-model="props.selected" />
+        </template>
+        <template v-else-if="props.row.progress === 100">
+          <q-btn flat round icon="mdi-file-music-outline" />
+          <q-btn flat round color="accent" icon="mdi-play-circle-outline " />
+        </template>
       </q-td>
     </template>
 
@@ -69,7 +81,7 @@
         outline
         color="primary"
         label="Download"
-        :disabled="selected.length === 0"
+        :disabled="track.selected.length === 0"
         @click="download"
       />
     </template>
@@ -104,7 +116,7 @@
 </style>
 
 <script>
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
 import { useTrackStore } from '../stores/track';
 
 const columns = [
@@ -137,21 +149,11 @@ export default defineComponent({
   name: 'MusicList',
 
   setup() {
-    const selected = ref([]);
     const track = useTrackStore();
 
     return {
-      selected,
       columns,
       track,
-
-      getSelectedString() {
-        return selected.value.length === 0
-          ? ''
-          : `${selected.value.length} record${
-              selected.value.length > 1 ? 's' : ''
-            } selected of ${track.length}`;
-      },
 
       cancel() {
         track.removeTracks();
@@ -160,9 +162,10 @@ export default defineComponent({
       download() {
         if (process.env.MODE === 'electron') {
           window.downloader.downloadList(
-            JSON.parse(JSON.stringify(selected.value))
+            JSON.parse(JSON.stringify(track.selected))
           );
         }
+        track.setDownloading();
       },
     };
   },

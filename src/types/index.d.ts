@@ -9,6 +9,7 @@ export interface Track {
   album_name: string;
   release_date: string;
   cover_url: string;
+  downloading?: boolean;
   progress?: number;
 }
 

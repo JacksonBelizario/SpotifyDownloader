@@ -3,19 +3,32 @@ import { Track } from 'src/types';
 
 interface ILoggerState {
   rawTracks: Track[];
+  rawSelected: Track[];
 }
 
 export const useTrackStore = defineStore({
   id: 'track',
   state: (): ILoggerState => ({
     rawTracks: [],
+    rawSelected: [],
   }),
   getters: {
     tracks: (state) => state.rawTracks,
+    selected: (state) => state.rawSelected,
   },
   actions: {
     removeTracks() {
       this.rawTracks = [];
+    },
+    setDownloading() {
+      for (const track of this.rawSelected) {
+        const idx = this.rawTracks.findIndex(({ id }) => id === track.id);
+        this.rawTracks.splice(idx, 1, {
+          ...this.rawTracks[idx],
+          downloading: true,
+        });
+      }
+      this.rawSelected = [];
     },
     addTracks(tracks: Track[]) {
       for (const track of tracks) {
