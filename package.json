@@ -17,6 +17,7 @@
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@quasar/extras": "^1.0.0",
     "fluent-ffmpeg": "^2.1.2",
+    "pinia": "^2.0.13",
     "quasar": "^2.6.0",
     "spotify-dl": "^1.0.7",
     "vue": "^3.0.0",

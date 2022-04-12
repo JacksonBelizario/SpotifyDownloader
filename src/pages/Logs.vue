@@ -5,7 +5,7 @@
         <q-card>
           <q-card-section>
             <q-list dense bordered dark padding>
-              <q-item v-for="item in messages" :key="item">
+              <q-item v-for="item in logger.messages" :key="item">
                 <q-item-section>
                   {{ item }}
                 </q-item-section>
@@ -19,22 +19,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent } from 'vue';
+import { useLoggerStore } from '../stores/logger';
 
 export default defineComponent({
   name: 'LogsPage',
 
   setup() {
-    const messages = ref<(string | object)[]>([]);
-
-    onMounted(() => {
-      window.app.onLogEvent((message) => {
-        messages.value.push(message);
-      });
-    });
+    const logger = useLoggerStore();
 
     return {
-      messages,
+      logger,
     };
   },
 });

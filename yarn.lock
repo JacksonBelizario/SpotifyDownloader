@@ -563,7 +563,7 @@
     "@vue/compiler-dom" "3.2.31"
     "@vue/shared" "3.2.31"
 
-"@vue/devtools-api@^6.0.0":
+"@vue/devtools-api@^6.0.0", "@vue/devtools-api@^6.1.4":
   version "6.1.4"
   resolved "https://registry.yarnpkg.com/@vue/devtools-api/-/devtools-api-6.1.4.tgz#b4aec2f4b4599e11ba774a50c67fa378c9824e53"
   integrity sha512-IiA0SvDrJEgXvVxjNkHPFfDx6SXw0b/TUkqMcDZWNg9fnCAHbTpoo59YfJ9QLFkwa3raau5vSlRVzMSLDnfdtQ==
@@ -4400,6 +4400,14 @@ pify@^3.0.0:
   resolved "https://registry.yarnpkg.com/pify/-/pify-3.0.0.tgz#e5a4acd2c101fdf3d9a4d07f0dbc4db49dd28176"
   integrity sha1-5aSs0sEB/fPZpNB/DbxNtJ3SgXY=
 
+pinia@^2.0.13:
+  version "2.0.13"
+  resolved "https://registry.yarnpkg.com/pinia/-/pinia-2.0.13.tgz#6656fc290dae120a9f0cb2f5c520df400d41b8c5"
+  integrity sha512-B7rSqm1xNpwcPMnqns8/gVBfbbi7lWTByzS6aPZ4JOXSJD4Y531rZHDCoYWBwLyHY/8hWnXljgiXp6rRyrofcw==
+  dependencies:
+    "@vue/devtools-api" "^6.1.4"
+    vue-demi "*"
+
 pkg-dir@4.2.0:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/pkg-dir/-/pkg-dir-4.2.0.tgz#f099133df7ede422e81d1d8448270eeb3e4261f3"
@@ -5666,6 +5674,11 @@ vite@2.9.1:
     rollup "^2.59.0"
   optionalDependencies:
     fsevents "~2.3.2"
+
+vue-demi@*:
+  version "0.12.5"
+  resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.12.5.tgz#8eeed566a7d86eb090209a11723f887d28aeb2d1"
+  integrity sha512-BREuTgTYlUr0zw0EZn3hnhC3I6gPWv+Kwh4MCih6QcAeaTlaIX0DwOVN0wHej7hSvDPecz4jygy/idsgKfW58Q==
 
 vue-eslint-parser@^8.0.1:
   version "8.3.0"

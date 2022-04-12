@@ -2,7 +2,7 @@
   <q-table
     v-model:selected="selected"
     class="sticky-table"
-    :rows="rows"
+    :rows="track.tracks"
     :columns="columns"
     row-key="name"
     :selected-rows-label="getSelectedString"
@@ -104,7 +104,8 @@
 </style>
 
 <script>
-import { defineComponent, onMounted, ref, unref } from 'vue';
+import { defineComponent, ref } from 'vue';
+import { useTrackStore } from '../stores/track';
 
 const columns = [
   {
@@ -137,43 +138,23 @@ export default defineComponent({
 
   setup() {
     const selected = ref([]);
-    const rows = ref([]);
-
-    onMounted(() => {
-      window.app.onMusicList((musicList) => {
-        for (let music of musicList) {
-          if (!rows.value.some(({ id }) => id === music.id)) {
-            rows.value.push(music);
-          }
-        }
-      });
-
-      window.app.onDownloadProgress((itemId, progress) => {
-        const idx = rows.value.findIndex(({ id }) => id === itemId);
-        if (idx > -1) {
-          rows.value.splice(idx, 1, {
-            ...rows.value[idx],
-            progress,
-          });
-        }
-      });
-    });
+    const track = useTrackStore();
 
     return {
       selected,
       columns,
-      rows,
+      track,
 
       getSelectedString() {
         return selected.value.length === 0
           ? ''
           : `${selected.value.length} record${
               selected.value.length > 1 ? 's' : ''
-            } selected of ${rows.value.length}`;
+            } selected of ${track.length}`;
       },
 
       cancel() {
-        rows.value = [];
+        track.removeTracks();
       },
 
       download() {
