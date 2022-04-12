@@ -51,7 +51,10 @@
     </template>
     <template #header-cell-options="props">
       <q-th :props="props">
-        <q-checkbox v-model="props.selected" />
+        <q-checkbox
+          v-if="!track.tracks.find((i) => i.downloading)"
+          v-model="props.selected"
+        />
       </q-th>
     </template>
     <template #body-cell-options="props">
@@ -103,6 +106,7 @@
   thead tr th {
     position: sticky;
     z-index: 1;
+    height: 49px;
   }
   /* this will be the loading indicator */
   thead tr:last-child th {
