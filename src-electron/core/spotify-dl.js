@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { ipcMain, BrowserWindow, dialog } from 'electron';
+import { BrowserWindow } from 'electron';
 import Constants from '../../node_modules/spotify-dl/util/constants.js';
 import downloader from './lib/downloader.js';
 import mergeMetadata from './lib/metadata.js';
@@ -35,7 +35,14 @@ const itemOutputDir = (output, item) => {
       );
 };
 
-const downloadList = async (output, items) => {
+const setFilePath = (id, filePath) => {
+  const win =
+    BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+
+  win.webContents.send('file-path', id, filePath);
+};
+
+export const downloadList = async (output, items) => {
   const totalItems = items.length;
   logger(`Total Items: ${totalItems}`);
   let currentCount = 0;
@@ -71,6 +78,9 @@ const downloadList = async (output, items) => {
       const fileNameCleaned = cleanOutputPath(itemName) || '_';
 
       const outputFilePath = path.resolve(itemDir, `${fileNameCleaned}.mp3`);
+
+      setFilePath(itemId, outputFilePath);
+
       //create the dir if it doesn't exist
       fs.mkdirSync(itemDir, { recursive: true });
       const downloadSuccessful = await downloader(
@@ -91,7 +101,7 @@ const downloadList = async (output, items) => {
   return items;
 };
 
-async function queryUrl(URL) {
+export async function queryUrl(URL) {
   if (!URL) {
     return;
   }
@@ -223,26 +233,3 @@ async function queryUrl(URL) {
     lists.flatMap((x) => x.items)
   );
 }
-
-/**
- * @method
- */
-export default {
-  listen() {
-    ipcMain.handle('queryUrl', (_event, url) => queryUrl(url));
-    ipcMain.handle('downloadList', async (_event, list) => {
-      const { canceled, filePaths } = await dialog.showOpenDialog(
-        BrowserWindow.getFocusedWindow(),
-        { properties: ['openDirectory'] }
-      );
-      if (canceled) {
-        return;
-      }
-      const output = filePaths[0];
-
-      BrowserWindow.getFocusedWindow().webContents.send('start-download');
-
-      downloadList(output, list);
-    });
-  },
-};
