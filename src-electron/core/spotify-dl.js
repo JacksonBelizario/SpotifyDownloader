@@ -8,6 +8,7 @@ import { cleanOutputPath } from '../../node_modules/spotify-dl/util/filters.js';
 import getLinks from '../../node_modules/spotify-dl/util/get-link.js';
 import urlParser from '../../node_modules/spotify-dl/util/url-parser.js';
 import logger from './util/logger';
+import { getSettings } from './util/settings';
 
 import {
   getTrack,
@@ -21,10 +22,10 @@ const {
   // YOUTUBE_SEARCH: { GENERIC_IMAGE },
 } = Constants;
 
-const outputOnly = true;
 const extraSearch = '';
 
 const itemOutputDir = (output, item) => {
+  const outputOnly = getSettings().outputOnly;
   const outputDir = path.normalize(output);
   return outputOnly
     ? outputDir

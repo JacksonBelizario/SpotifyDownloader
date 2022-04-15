@@ -3,22 +3,22 @@
     <div class="row no-wrap q-pa-md">
       <div class="column">
         <div class="text-h6 q-mb-md">Settings</div>
-        <q-toggle v-model="sample1" label="Sample 1" />
-        <q-toggle v-model="sample2" label="Sample 2" />
+        <q-toggle v-model="settings.outputOnly" label="Output Only" />
       </div>
     </div>
   </q-page>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
+import { useSettingsStore } from '../stores/settings';
 
 export default defineComponent({
   name: 'SettingsPage',
   setup() {
-    const sample1 = ref(false);
-    const sample2 = ref(false);
-    return { sample1, sample2 };
+    const settings = useSettingsStore();
+
+    return { settings };
   },
 });
 </script>

@@ -1,6 +1,7 @@
 import { IHeader } from '../../src-electron/preload/header';
 import { IApp } from '../../src-electron/preload/app';
 import { IDownloader } from '../../src-electron/preload/downloader';
+import { ISettings } from '../../src-electron/preload/settings';
 
 export interface Track {
   id: string;
@@ -19,6 +20,7 @@ declare global {
     header: IHeader;
     app: IApp;
     downloader: IDownloader;
+    settings: ISettings;
   }
 }
 

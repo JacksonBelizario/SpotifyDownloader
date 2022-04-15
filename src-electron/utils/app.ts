@@ -1,5 +1,6 @@
 import { ipcMain, BrowserWindow, dialog, shell } from 'electron';
 import { downloadList, queryUrl } from '../core/spotify-dl';
+import * as settings from '../core/util/settings';
 
 /**
  * @method
@@ -26,6 +27,14 @@ export default {
     });
     ipcMain.handle('openPath', async (_event, filePath: string) => {
       shell.openPath(filePath);
+    });
+
+    ipcMain.handle('setSetting', (_event, key: string, value: any) => {
+      settings.set(key, value);
+    });
+
+    ipcMain.handle('getSettings', () => {
+      return settings.getSettings();
     });
   },
 };

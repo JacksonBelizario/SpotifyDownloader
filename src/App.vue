@@ -7,6 +7,7 @@ import { defineComponent, onMounted } from 'vue';
 import { useQuasar, setCssVar } from 'quasar';
 import { useLoggerStore } from './stores/logger';
 import { useTrackStore } from './stores/track';
+import { useSettingsStore } from './stores/settings';
 
 setCssVar('primary', '#1ed760');
 setCssVar('accent', '#00c853');
@@ -16,10 +17,16 @@ export default defineComponent({
   setup() {
     const logger = useLoggerStore();
     const track = useTrackStore();
+    const settings = useSettingsStore();
     const $q = useQuasar();
     $q.dark.set(true);
 
-    onMounted(() => {
+    onMounted(async () => {
+      /**
+       * Populate Store with persisted settings
+       */
+      settings.setSettings(await window.settings.load());
+
       window.app.onLogEvent((message) => {
         logger.addLog(message);
       });
