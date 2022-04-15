@@ -63,8 +63,19 @@
           <q-checkbox v-model="props.selected" />
         </template>
         <template v-else-if="props.row.progress === 100">
-          <q-btn flat round icon="mdi-file-music-outline" />
-          <q-btn flat round color="accent" icon="mdi-play-circle-outline " />
+          <q-btn
+            flat
+            round
+            icon="mdi-file-music-outline"
+            @click="showInFolder(props.row.filePath)"
+          />
+          <q-btn
+            flat
+            round
+            color="accent"
+            icon="mdi-play-circle-outline"
+            @click="openPath(props.row.filePath)"
+          />
         </template>
       </q-td>
     </template>
@@ -168,6 +179,18 @@ export default defineComponent({
           window.downloader.downloadList(
             JSON.parse(JSON.stringify(track.selected))
           );
+        }
+      },
+
+      showInFolder(filePath) {
+        if (process.env.MODE === 'electron') {
+          window.downloader.showInFolder(filePath);
+        }
+      },
+
+      openPath(filePath) {
+        if (process.env.MODE === 'electron') {
+          window.downloader.openPath(filePath);
         }
       },
     };

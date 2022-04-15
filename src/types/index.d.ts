@@ -11,6 +11,7 @@ export interface Track {
   cover_url: string;
   downloading?: boolean;
   progress?: number;
+  filePath?: string;
 }
 
 declare global {

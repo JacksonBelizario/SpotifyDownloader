@@ -6,6 +6,7 @@ export interface IApp {
   onMusicList(callback: (list: Track[]) => void): void;
   onStartDownload(callback: () => void): void;
   onDownloadProgress(callback: (id: string, progress: number) => void): void;
+  onFilePath(callback: (id: string, fielPath: string) => void): void;
 }
 
 const app: IApp = {
@@ -29,6 +30,13 @@ const app: IApp = {
   ): void {
     ipcRenderer.on('download-progress', (_event, id, progress) => {
       callback(id, progress);
+    });
+  },
+  onFilePath: function (
+    callback: (id: string, filePath: string) => void
+  ): void {
+    ipcRenderer.on('file-path', (_event, id, filePath) => {
+      callback(id, filePath);
     });
   },
 };

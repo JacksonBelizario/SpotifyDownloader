@@ -1,8 +1,11 @@
 import { ipcRenderer } from 'electron';
+import { Track } from 'src/types';
 
 export interface IDownloader {
   queryUrl(url: string): void;
-  downloadList(list: object[]): void;
+  downloadList(list: Track[]): void;
+  showInFolder(filePath: string): void;
+  openPath(filePath: string): void;
 }
 
 const downloader: IDownloader = {
@@ -11,6 +14,12 @@ const downloader: IDownloader = {
   },
   downloadList(list) {
     ipcRenderer.invoke('downloadList', list);
+  },
+  showInFolder(list) {
+    ipcRenderer.invoke('showInFolder', list);
+  },
+  openPath(list) {
+    ipcRenderer.invoke('openPath', list);
   },
 };
 

@@ -46,5 +46,14 @@ export const useTrackStore = defineStore({
         });
       }
     },
+    setFilePath(itemId: string, filePath: string) {
+      const idx = this.rawTracks.findIndex(({ id }) => id === itemId);
+      if (idx > -1) {
+        this.rawTracks.splice(idx, 1, {
+          ...this.rawTracks[idx],
+          filePath,
+        });
+      }
+    },
   },
 });

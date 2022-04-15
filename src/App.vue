@@ -35,6 +35,10 @@ export default defineComponent({
       window.app.onDownloadProgress((itemId, progress) => {
         track.changeProgress(itemId, progress);
       });
+
+      window.app.onFilePath((itemId, filePath) => {
+        track.setFilePath(itemId, filePath);
+      });
     });
 
     return {
