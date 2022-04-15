@@ -28,6 +28,10 @@ export default defineComponent({
         track.addTracks(musicList);
       });
 
+      window.app.onStartDownload(() => {
+        track.setDownloading();
+      });
+
       window.app.onDownloadProgress((itemId, progress) => {
         track.changeProgress(itemId, progress);
       });

@@ -94,7 +94,7 @@
 <style lang="scss">
 .sticky-table {
   /* height or max-height is important */
-  height: calc(100vh - 141px);
+  height: calc(100vh - 125px);
 
   .q-table__top,
   .q-table__bottom,
@@ -169,7 +169,6 @@ export default defineComponent({
             JSON.parse(JSON.stringify(track.selected))
           );
         }
-        track.setDownloading();
       },
     };
   },

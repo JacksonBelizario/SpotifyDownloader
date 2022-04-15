@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-12">
         <q-card>
-          <q-card-section>
+          <q-card-section class="q-pb-none">
             <q-form ref="form" @submit="queryUrl">
               <q-input
                 outlined

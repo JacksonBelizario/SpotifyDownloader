@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { ipcMain, BrowserWindow } from 'electron';
+import { ipcMain, BrowserWindow, dialog } from 'electron';
 import Constants from '../../node_modules/spotify-dl/util/constants.js';
 import downloader from './lib/downloader.js';
 import mergeMetadata from './lib/metadata.js';
@@ -21,11 +21,10 @@ const {
   // YOUTUBE_SEARCH: { GENERIC_IMAGE },
 } = Constants;
 
-const output = './output';
 const outputOnly = true;
 const extraSearch = '';
 
-const itemOutputDir = (item) => {
+const itemOutputDir = (output, item) => {
   const outputDir = path.normalize(output);
   return outputOnly
     ? outputDir
@@ -36,13 +35,13 @@ const itemOutputDir = (item) => {
       );
 };
 
-const downloadList = async (items) => {
+const downloadList = async (output, items) => {
   const totalItems = items.length;
   logger(`Total Items: ${totalItems}`);
   let currentCount = 0;
   for (const nextItem of items) {
     currentCount++;
-    const itemDir = itemOutputDir(nextItem);
+    const itemDir = itemOutputDir(output, nextItem);
     // const cached = findId(nextItem.id, itemOutputDir(nextItem));
     const cached = false;
     if (!cached) {
@@ -231,8 +230,19 @@ async function queryUrl(URL) {
 export default {
   listen() {
     ipcMain.handle('queryUrl', (_event, url) => queryUrl(url));
-    ipcMain.handle('downloadList', (_event, list) => {
-      downloadList(list);
+    ipcMain.handle('downloadList', async (_event, list) => {
+      const { canceled, filePaths } = await dialog.showOpenDialog(
+        BrowserWindow.getFocusedWindow(),
+        { properties: ['openDirectory'] }
+      );
+      if (canceled) {
+        return;
+      }
+      const output = filePaths[0];
+
+      BrowserWindow.getFocusedWindow().webContents.send('start-download');
+
+      downloadList(output, list);
     });
   },
 };
