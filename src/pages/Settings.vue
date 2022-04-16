@@ -1,11 +1,39 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <div class="row no-wrap q-pa-md">
-      <div class="column">
-        <div class="text-h6 q-mb-md">Settings</div>
-        <q-toggle v-model="settings.outputOnly" label="Output Only" />
+  <q-page>
+    <div class="row q-pa-md">
+      <div class="col-12">
+        <div class="text-h6">Settings</div>
       </div>
     </div>
+
+    <q-list dense>
+      <q-item tag="label" v-ripple>
+        <q-item-section>
+          <q-item-label>Output Only</q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-toggle v-model="settings.outputOnly" val="output-only" />
+        </q-item-section>
+      </q-item>
+
+      <q-separator spaced />
+      <q-item-label header>
+        Concurrent downloads:
+        {{ settings.concurrentDownloads }}
+      </q-item-label>
+
+      <q-item>
+        <q-item-section>
+          <q-slider
+            v-model="settings.concurrentDownloads"
+            :min="1"
+            :max="10"
+            label
+            snap
+          />
+        </q-item-section>
+      </q-item>
+    </q-list>
   </q-page>
 </template>
 

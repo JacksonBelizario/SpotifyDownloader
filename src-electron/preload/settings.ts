@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import { Settings } from '../core/util/settings';
+import { Settings } from 'src/types';
 
 export interface ISettings {
   set(key: string, value: any): void;

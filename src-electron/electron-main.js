@@ -2,8 +2,7 @@ import { app, BrowserWindow, nativeTheme } from 'electron';
 import { initialize, enable } from '@electron/remote/main';
 import path from 'path';
 import os from 'os';
-
-import apiApp from './utils/app';
+import api from './api';
 
 initialize();
 
@@ -55,7 +54,7 @@ function createWindow() {
     mainWindow = null;
   });
 
-  apiApp.listen();
+  api.listen();
 }
 
 app.whenReady().then(createWindow);

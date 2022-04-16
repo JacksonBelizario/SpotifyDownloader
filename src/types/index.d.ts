@@ -15,6 +15,11 @@ export interface Track {
   filePath?: string;
 }
 
+export interface Settings {
+  outputOnly: boolean;
+  concurrentDownloads: number;
+}
+
 declare global {
   interface Window {
     header: IHeader;

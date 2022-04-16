@@ -2,23 +2,14 @@ import SpotifyWebApi from 'spotify-web-api-node';
 import Config from '../../../node_modules/spotify-dl/config.js';
 import Constants from '../../../node_modules/spotify-dl/util/constants.js';
 import logger from '../util/logger';
+import { chunkArray } from '../util/utils';
 
 const {
   spotifyApi: { clientId, clientSecret },
 } = Config;
 
 const {
-  AUTH: {
-    // SCOPES: {
-    //   USERS_SAVED_PLAYLISTS,
-    //   USERS_SAVED_TRACKS_ALBUMS,
-    //   USERS_TOP_TRACKS,
-    // },
-    // STATE,
-    REFRESH_ACCESS_TOKEN_SECONDS,
-    TIMEOUT_RETRY,
-  },
-  //   INPUT_TYPES,
+  AUTH: { REFRESH_ACCESS_TOKEN_SECONDS, TIMEOUT_RETRY },
   MAX_LIMIT_DEFAULT,
   SERVER: { PORT, HOST, CALLBACK_URI },
 } = Constants;
@@ -28,12 +19,6 @@ const spotifyApi = new SpotifyWebApi({
   clientSecret,
   redirectUri: `http://${HOST}:${PORT}${CALLBACK_URI}`,
 });
-
-// const scopes = [
-//   USERS_SAVED_PLAYLISTS,
-//   USERS_SAVED_TRACKS_ALBUMS,
-//   USERS_TOP_TRACKS,
-// ];
 
 let nextTokenRefreshTime;
 
@@ -52,28 +37,7 @@ const checkCredentials = async () => {
   if (await spotifyApi.getRefreshToken()) {
     await refreshToken();
   } else {
-    // const {
-    //   inputs,
-    //   username,
-    //   password,
-    //   login,
-    // } = cliInputs();
-
-    // const requiresLogin = inputs.find(input =>
-    //   input.type == INPUT_TYPES.SONG.SAVED_ALBUMS ||
-    //   input.type == INPUT_TYPES.SONG.SAVED_PLAYLISTS ||
-    //   input.type == INPUT_TYPES.SONG.SAVED_TRACKS ||
-    //   input.type == INPUT_TYPES.EPISODE.SAVED_SHOWS,
-    // );
-
-    // const requestingLogin = (username && password) || login;
-
-    // if (requiresLogin || requestingLogin) {
-    //   await requestAuthorizedTokens();
-    // } else
-    {
-      await requestTokens();
-    }
+    await requestTokens();
   }
 };
 
@@ -245,12 +209,4 @@ export async function extractArtistAlbums(artistId) {
   } while (albums.length < artistAlbums.total);
   // remove albums that are not direct artist albums
   return albums;
-}
-
-function chunkArray(array, chunkSize) {
-  const chunks = [];
-  for (let i = 0; i < array.length; i += chunkSize) {
-    chunks.push(array.slice(i, i + chunkSize));
-  }
-  return chunks;
 }
