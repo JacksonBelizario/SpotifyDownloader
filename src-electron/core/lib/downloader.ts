@@ -12,7 +12,7 @@ import logger from '../util/logger';
 ffmpeg.setFfmpegPath(ffmpegPath.replace('app.asar', 'app.asar.unpacked'));
 
 const { youtubeDLConfig, isTTY } = Config;
-const sponsorBlock = new SponsorBlock(1234);
+const sponsorBlock = new SponsorBlock('1234');
 const {
   SPONSOR_BLOCK: {
     CATEGORIES: {
@@ -27,7 +27,7 @@ const {
   FFMPEG: { ASET, TIMEOUT_MINUTES },
 } = Constants;
 
-const sponsorComplexFilter = async (link) => {
+const sponsorComplexFilter = async (link: string) => {
   const videoID = new URLSearchParams(new URL(link).search).get('v');
   let segments = [];
   let complexFilter = null;
@@ -78,9 +78,9 @@ const sponsorComplexFilter = async (link) => {
   return complexFilter;
 };
 
-const progressFunction = (id, downloaded, total) => {
-  const downloadedMb = (downloaded / 1024 / 1024).toFixed(2);
-  const toBeDownloadedMb = (total / 1024 / 1024).toFixed(2);
+const progressFunction = (id: string, downloaded: number, total: number) => {
+  const downloadedMb = +(downloaded / 1024 / 1024).toFixed(2);
+  const toBeDownloadedMb = +(total / 1024 / 1024).toFixed(2);
   if (isTTY || downloadedMb % 1 == 0 || toBeDownloadedMb == downloadedMb) {
     const percentual = +((downloadedMb * 100) / toBeDownloadedMb).toFixed(1);
 
@@ -91,7 +91,7 @@ const progressFunction = (id, downloaded, total) => {
   }
 };
 
-const getYoutubeDLConfig = () => {
+const getYoutubeDLConfig = (): ytdl.downloadOptions => {
   const cookieFile = './yt-cookie.txt';
   if (fs.existsSync(cookieFile)) {
     const cookieFileContents = fs
@@ -121,7 +121,11 @@ const getYoutubeDLConfig = () => {
  * @param {array} youtubeLinks array of links of youtube videos
  * @param {string} output path/name of file to be downloaded(songname.mp3)
  */
-const downloader = async (id, youtubeLinks, output) => {
+const downloader = async (
+  id: string,
+  youtubeLinks: string[],
+  output: string
+): Promise<boolean> => {
   let attemptCount = 0;
   let downloadSuccess = false;
   while (attemptCount < youtubeLinks.length && !downloadSuccess) {
@@ -156,8 +160,7 @@ const downloader = async (id, youtubeLinks, output) => {
       downloadSuccess = true;
       logger('Download completed.');
     } catch (e) {
-      logger(e.message);
-      logger('Youtube error retrying download');
+      logger(`Youtube error retrying download: ${e.message}`);
       attemptCount++;
     }
   }

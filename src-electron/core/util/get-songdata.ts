@@ -1,3 +1,4 @@
+import { Track, TrackList } from '../../../src/types/index.js';
 import {
   extractTracks,
   extractAlbum,
@@ -6,27 +7,27 @@ import {
   extractPlaylist,
 } from '../lib/api.js';
 
-export async function getTrack(url) {
+export async function getTrack(url: string): Promise<Track> {
   return (await extractTracks([getID(url)]))[0];
 }
 
-export async function getPlaylist(url) {
+export async function getPlaylist(url: string): Promise<TrackList> {
   return await extractPlaylist(getID(url));
 }
 
-export async function getAlbum(url) {
+export async function getAlbum(url: string): Promise<TrackList> {
   return await extractAlbum(getID(url));
 }
 
-export async function getArtist(url) {
+export async function getArtist(url: string) {
   return await extractArtist(getID(url));
 }
 
-export async function getArtistAlbums(url) {
+export async function getArtistAlbums(url: string) {
   const artistResult = await getArtist(url);
   const albumsResult = await extractArtistAlbums(artistResult.id);
   const albumIds = albumsResult.map((album) => album.id);
-  let albumInfos = [];
+  const albumInfos = [];
   for (let x = 0; x < albumIds.length; x++) {
     const albumInfo = await extractAlbum(albumIds[x]);
     // hardcode to artist being requested
@@ -39,7 +40,7 @@ export async function getArtistAlbums(url) {
   return albumInfos;
 }
 
-const getID = (url) => {
+const getID = (url: string): string => {
   const splits = url.split('/');
   return splits[splits.length - 1];
 };

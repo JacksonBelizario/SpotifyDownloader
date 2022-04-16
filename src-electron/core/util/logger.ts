@@ -1,6 +1,6 @@
 import { BrowserWindow } from 'electron';
 
-export default function logger(message) {
+export default function logger(message: string | object) {
   console.log(message);
   const win =
     BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];

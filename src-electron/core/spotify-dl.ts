@@ -17,10 +17,25 @@ import {
   getAlbum,
   getArtistAlbums,
 } from './util/get-songdata.js';
+import { Track, TrackList } from '../../src/types/index.js';
 
 const { INPUT_TYPES } = Constants;
 
-const itemOutputDir = (output, item) => {
+const setFilePath = (id: string, filePath: string) => {
+  const win =
+    BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+
+  win.webContents.send('file-path', id, filePath);
+};
+
+const setMusicList = (list: Track[]) => {
+  const win =
+    BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
+
+  win.webContents.send('music-list', list);
+};
+
+const itemOutputDir = (output: string, item: Track) => {
   const outputOnly = getSettings().outputOnly;
   const outputDir = path.normalize(output);
   return outputOnly
@@ -32,24 +47,18 @@ const itemOutputDir = (output, item) => {
       );
 };
 
-const setFilePath = (id, filePath) => {
-  const win =
-    BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
-
-  win.webContents.send('file-path', id, filePath);
-};
-
-const download = async (output, nextItem) => {
+const download = async (output: string, nextItem: Track) => {
   const itemDir = itemOutputDir(output, nextItem);
   const itemId = nextItem.id;
   const itemName = nextItem.name;
   const albumName = nextItem.album_name;
   const artistName = nextItem.artists[0];
-  logger(
-    [`Artist: ${artistName}`, `Album: ${albumName}`, `Item: ${itemName}`].join(
-      '\n'
-    )
-  );
+
+  logger(`
+    Artist: ${artistName}\n
+    Album: ${albumName}\n
+    Item: ${itemName}
+  `);
 
   const ytLinks = nextItem.URL
     ? [nextItem.URL]
@@ -77,26 +86,26 @@ const download = async (output, nextItem) => {
   return nextItem;
 };
 
-export const downloadList = async (output, items) => {
+export const downloadList = async (output: string, items: Track[]) => {
   logger(`Total Items: ${items.length}`);
 
   const concurrentDownloads = getSettings().concurrentDownloads;
   const chunkedItems = chunkArray(items, concurrentDownloads);
 
-  for (let items of chunkedItems) {
+  for (const items of chunkedItems) {
     await Promise.all(items.map((item) => download(output, item)));
   }
 
   logger(`Finished processing ${items.length}!`);
 };
 
-export async function queryUrl(URL) {
+export async function queryUrl(URL: string) {
   if (!URL) {
     return;
   }
   const type = urlParser(URL);
 
-  const lists = [];
+  const lists: TrackList[] = [];
 
   switch (type) {
     case INPUT_TYPES.SONG.SONG: {
@@ -110,13 +119,13 @@ export async function queryUrl(URL) {
       break;
     }
     case INPUT_TYPES.SONG.PLAYLIST: {
-      const list = await getPlaylist(URL);
+      const list = (await getPlaylist(URL)) as TrackList;
       list.type = type;
       lists.push(list);
       break;
     }
     case INPUT_TYPES.SONG.ALBUM: {
-      const list = await getAlbum(URL);
+      const list = (await getAlbum(URL)) as TrackList;
       list.type = type;
       lists.push(list);
       break;
@@ -124,7 +133,7 @@ export async function queryUrl(URL) {
     case INPUT_TYPES.SONG.ARTIST: {
       const artistAlbumInfos = await getArtistAlbums(URL);
       lists.push(
-        ...artistAlbumInfos.map((list) => {
+        ...artistAlbumInfos.map((list: TrackList) => {
           list.type = type;
           return list;
         })
@@ -133,8 +142,5 @@ export async function queryUrl(URL) {
     }
   }
 
-  BrowserWindow.getFocusedWindow().webContents.send(
-    'music-list',
-    lists.flatMap((x) => x.items)
-  );
+  setMusicList(lists.flatMap((x) => x.items));
 }

@@ -10,9 +10,23 @@ export interface Track {
   album_name: string;
   release_date: string;
   cover_url: string;
+  URL?: string;
   downloading?: boolean;
   progress?: number;
   filePath?: string;
+  failed?: boolean;
+}
+export interface TrackList {
+  items: Track[];
+  name: string;
+  type?:
+    | 'song'
+    | 'playlist'
+    | 'album'
+    | 'artist'
+    | 'show'
+    | 'episode'
+    | 'youtube';
 }
 
 export interface Settings {

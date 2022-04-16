@@ -5,13 +5,14 @@ import ffmpeg from 'fluent-ffmpeg';
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
 import Constants from '../../../node_modules/spotify-dl/util/constants.js';
 import logger from '../util/logger';
+import { Track } from '../../../src/types/index.js';
 
 ffmpeg.setFfmpegPath(ffmpegPath.replace('app.asar', 'app.asar.unpacked'));
 ffmetadata.setFfmpegPath(ffmpegPath.replace('app.asar', 'app.asar.unpacked'));
 
-const downloadAndSaveCover = async function (uri, filename) {
+const downloadAndSaveCover = async function (uri: string, filename: string) {
   const writer = fs.createWriteStream(filename);
-  const cover = await axios.default({
+  const cover = await axios({
     method: 'GET',
     url: uri,
     responseType: 'stream',
@@ -19,7 +20,7 @@ const downloadAndSaveCover = async function (uri, filename) {
   cover.data.pipe(writer);
 };
 
-const mergeMetadata = async (output, songData) => {
+const mergeMetadata = async (output: string, songData: Track) => {
   const coverFileName = output.slice(0, output.length - 3) + 'jpg';
   let coverURL = songData.cover_url;
   if (!coverURL) {
@@ -41,7 +42,7 @@ const mergeMetadata = async (output, songData) => {
       if (err) {
         reject(err);
       } else {
-        resolve();
+        resolve(true);
       }
     });
   });
@@ -56,7 +57,7 @@ const mergeMetadata = async (output, songData) => {
         reject(err);
       })
       .on('end', () => {
-        resolve();
+        resolve(true);
       })
       .input(output)
       .addOutputOptions(

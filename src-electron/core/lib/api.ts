@@ -1,6 +1,7 @@
 import SpotifyWebApi from 'spotify-web-api-node';
 import Config from '../../../node_modules/spotify-dl/config.js';
 import Constants from '../../../node_modules/spotify-dl/util/constants.js';
+import { Track, TrackList } from '../../../src/types/index.js';
 import logger from '../util/logger';
 import { chunkArray } from '../util/utils';
 
@@ -80,7 +81,7 @@ const callSpotifyApi = async function (apiCall) {
   throw new Error(error);
 };
 
-export async function extractTracks(trackIds) {
+export async function extractTracks(trackIds: string[]): Promise<Track[]> {
   logger({ trackIds });
   const extractedTracks = [];
   const chunkedTracks = chunkArray(trackIds, 20);
@@ -94,7 +95,7 @@ export async function extractTracks(trackIds) {
   return extractedTracks.map((track) => parseTrack(track));
 }
 
-const parseTrack = (track) => {
+const parseTrack = (track): Track => {
   return {
     name: track.name,
     artists: track.artists.map((artist) => artist.name),
@@ -105,7 +106,7 @@ const parseTrack = (track) => {
   };
 };
 
-export async function extractPlaylist(playlistId) {
+export async function extractPlaylist(playlistId): Promise<TrackList> {
   const playlistInfo = await callSpotifyApi(
     async () => (await spotifyApi.getPlaylist(playlistId, { limit: 1 })).body
   );
@@ -137,7 +138,7 @@ export async function extractPlaylist(playlistId) {
   };
 }
 
-export async function extractAlbum(albumId) {
+export async function extractAlbum(albumId): Promise<TrackList> {
   const albumInfo = await callSpotifyApi(
     async () => (await spotifyApi.getAlbum(albumId, { limit: 1 })).body
   );
