@@ -4,13 +4,10 @@
 
 <script lang="ts">
 import { defineComponent, onMounted } from 'vue';
-import { useQuasar, setCssVar } from 'quasar';
+import { useQuasar } from 'quasar';
 import { useLoggerStore } from './stores/logger';
 import { useTrackStore } from './stores/track';
 import { useSettingsStore } from './stores/settings';
-
-setCssVar('primary', '#1ed760');
-setCssVar('accent', '#00c853');
 
 export default defineComponent({
   name: 'App',
