@@ -30,16 +30,15 @@ export default {
   listen() {
     ipcMain.handle('queryUrl', (_event, url: string) => queryUrl(url));
     ipcMain.handle('downloadList', async (_event, list) => {
-      const { canceled, filePaths } = await dialog.showOpenDialog(
-        BrowserWindow.getFocusedWindow(),
-        { properties: ['openDirectory'] }
-      );
+      const { canceled, filePaths } = await dialog.showOpenDialog(getWindow(), {
+        properties: ['openDirectory'],
+      });
       if (canceled) {
         return;
       }
       const output = filePaths[0];
 
-      BrowserWindow.getFocusedWindow().webContents.send('start-download');
+      getWindow().webContents.send('start-download');
 
       downloadList(output, list);
     });
