@@ -1,15 +1,14 @@
 import path from 'path';
 import fs from 'fs';
-import { BrowserWindow } from 'electron';
 import Constants from '../../node_modules/spotify-dl/util/constants.js';
 import downloader from './lib/downloader.js';
 import mergeMetadata from './lib/metadata.js';
 import { cleanOutputPath } from '../../node_modules/spotify-dl/util/filters.js';
 import getLinks from '../../node_modules/spotify-dl/util/get-link.js';
 import urlParser from '../../node_modules/spotify-dl/util/url-parser.js';
-import logger from './util/logger';
 import { getSettings } from './util/settings';
 import { chunkArray } from './util/utils';
+import api from '../api';
 
 import {
   getTrack,
@@ -20,20 +19,6 @@ import {
 import { Track, TrackList } from '../../src/types/index.js';
 
 const { INPUT_TYPES } = Constants;
-
-const setFilePath = (id: string, filePath: string) => {
-  const win =
-    BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
-
-  win.webContents.send('file-path', id, filePath);
-};
-
-const setMusicList = (list: Track[]) => {
-  const win =
-    BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
-
-  win.webContents.send('music-list', list);
-};
 
 const itemOutputDir = (output: string, item: Track) => {
   const outputOnly = getSettings().outputOnly;
@@ -54,7 +39,7 @@ const download = async (output: string, nextItem: Track) => {
   const albumName = nextItem.album_name;
   const artistName = nextItem.artists[0];
 
-  logger(`
+  api.logger(`
     Artist: ${artistName}\n
     Album: ${albumName}\n
     Item: ${itemName}
@@ -68,14 +53,14 @@ const download = async (output: string, nextItem: Track) => {
 
   const outputFilePath = path.resolve(itemDir, `${fileNameCleaned}.mp3`);
 
-  setFilePath(itemId, outputFilePath);
+  api.setFilePath(itemId, outputFilePath);
 
   //create the dir if it doesn't exist
   fs.mkdirSync(itemDir, { recursive: true });
 
   const downloadSuccessful = await downloader(itemId, ytLinks, outputFilePath);
 
-  logger({ ytLinks, outputFilePath, downloadSuccessful });
+  api.logger({ ytLinks, outputFilePath, downloadSuccessful });
 
   if (downloadSuccessful) {
     await mergeMetadata(outputFilePath, nextItem);
@@ -87,7 +72,7 @@ const download = async (output: string, nextItem: Track) => {
 };
 
 export const downloadList = async (output: string, items: Track[]) => {
-  logger(`Total Items: ${items.length}`);
+  api.logger(`Total Items: ${items.length}`);
 
   const concurrentDownloads = getSettings().concurrentDownloads;
   const chunkedItems = chunkArray(items, concurrentDownloads);
@@ -96,7 +81,7 @@ export const downloadList = async (output: string, items: Track[]) => {
     await Promise.all(items.map((item) => download(output, item)));
   }
 
-  logger(`Finished processing ${items.length}!`);
+  api.logger(`Finished processing ${items.length}!`);
 };
 
 export async function queryUrl(URL: string) {
@@ -142,5 +127,5 @@ export async function queryUrl(URL: string) {
     }
   }
 
-  setMusicList(lists.flatMap((x) => x.items));
+  api.setMusicList(lists.flatMap((x) => x.items));
 }

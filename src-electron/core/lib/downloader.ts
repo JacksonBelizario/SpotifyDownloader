@@ -3,11 +3,10 @@ import ffmpeg from 'fluent-ffmpeg';
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
 import fs from 'fs';
 import { SponsorBlock } from 'sponsorblock-api';
-import { BrowserWindow } from 'electron';
 
 import Config from '../../../node_modules/spotify-dl/config.js';
 import Constants from '../../../node_modules/spotify-dl/util/constants.js';
-import logger from '../util/logger';
+import api from '../../api';
 
 ffmpeg.setFfmpegPath(ffmpegPath.replace('app.asar', 'app.asar.unpacked'));
 
@@ -84,10 +83,7 @@ const progressFunction = (id: string, downloaded: number, total: number) => {
   if (isTTY || downloadedMb % 1 == 0 || toBeDownloadedMb == downloadedMb) {
     const percentual = +((downloadedMb * 100) / toBeDownloadedMb).toFixed(1);
 
-    const win =
-      BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
-
-    win.webContents.send('download-progress', id, percentual);
+    api.setDownloadProgress(id, percentual);
   }
 };
 
@@ -130,7 +126,7 @@ const downloader = async (
   let downloadSuccess = false;
   while (attemptCount < youtubeLinks.length && !downloadSuccess) {
     const link = youtubeLinks[attemptCount];
-    logger(`Trying youtube link ${attemptCount + 1}...`);
+    api.logger(`Trying youtube link ${attemptCount + 1}...`);
     const complexFilter = await sponsorComplexFilter(link);
 
     const doDownload = (resolve, reject) => {
@@ -158,9 +154,9 @@ const downloader = async (
     try {
       await new Promise(doDownload);
       downloadSuccess = true;
-      logger('Download completed.');
+      api.logger('Download completed.');
     } catch (e) {
-      logger(`Youtube error retrying download: ${e.message}`);
+      api.logger(`Youtube error retrying download: ${e.message}`);
       attemptCount++;
     }
   }

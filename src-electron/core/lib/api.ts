@@ -2,8 +2,8 @@ import SpotifyWebApi from 'spotify-web-api-node';
 import Config from '../../../node_modules/spotify-dl/config.js';
 import Constants from '../../../node_modules/spotify-dl/util/constants.js';
 import { Track, TrackList } from '../../../src/types/index.js';
-import logger from '../util/logger';
 import { chunkArray } from '../util/utils';
+import api from '../../api';
 
 const {
   spotifyApi: { clientId, clientSecret },
@@ -29,7 +29,7 @@ const verifyCredentials = async () => {
     nextTokenRefreshTime.setSeconds(
       nextTokenRefreshTime.getSeconds() + REFRESH_ACCESS_TOKEN_SECONDS
     );
-    logger('Generating new access token');
+    api.logger('Generating new access token');
     await checkCredentials();
   }
 };
@@ -69,7 +69,7 @@ const callSpotifyApi = async function (apiCall) {
       return await apiCall();
     } catch (e) {
       error = e;
-      logger(
+      api.logger(
         `Got a spotify api error (${e})\n` +
           `Timing out for 5 minutes x ${tries}`
       );
@@ -82,11 +82,11 @@ const callSpotifyApi = async function (apiCall) {
 };
 
 export async function extractTracks(trackIds: string[]): Promise<Track[]> {
-  logger({ trackIds });
+  api.logger({ trackIds });
   const extractedTracks = [];
   const chunkedTracks = chunkArray(trackIds, 20);
   for (let x = 0; x < chunkedTracks.length; x++) {
-    logger('extracting track set ' + `${x + 1}/${chunkedTracks.length}`);
+    api.logger('extracting track set ' + `${x + 1}/${chunkedTracks.length}`);
     const tracks = await callSpotifyApi(
       async () => (await spotifyApi.getTracks(chunkedTracks[x])).body.tracks
     );
@@ -124,7 +124,7 @@ export async function extractPlaylist(playlistId): Promise<TrackList> {
         ).body
     );
     if (!offset) {
-      logger(`extracting ${playlistData.total} tracks`);
+      api.logger(`extracting ${playlistData.total} tracks`);
     }
     tracks.push(...playlistData.items);
     offset += MAX_LIMIT_DEFAULT;
@@ -156,7 +156,7 @@ export async function extractAlbum(albumId): Promise<TrackList> {
         ).body
     );
     if (!offset) {
-      logger(`extracting ${albumTracks.total} tracks`);
+      api.logger(`extracting ${albumTracks.total} tracks`);
     }
     tracks.push(...albumTracks.items);
     offset += MAX_LIMIT_DEFAULT;
@@ -203,7 +203,7 @@ export async function extractArtistAlbums(artistId) {
         ).body
     );
     if (!offset) {
-      logger(`extracting ${artistAlbums.total} albums`);
+      api.logger(`extracting ${artistAlbums.total} albums`);
     }
     albums.push(...artistAlbums.items);
     offset += MAX_LIMIT_DEFAULT;

@@ -1,11 +1,32 @@
 import { ipcMain, BrowserWindow, dialog, shell } from 'electron';
+import { Track } from '../../src/types';
 import { downloadList, queryUrl } from '../core/spotify-dl';
 import * as settings from '../core/util/settings';
+
+const getWindow = (): BrowserWindow =>
+  BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
 
 /**
  * @method
  */
 export default {
+  setFilePath: (id: string, filePath: string) => {
+    getWindow().webContents.send('file-path', id, filePath);
+  },
+
+  setMusicList: (list: Track[]) => {
+    getWindow().webContents.send('music-list', list);
+  },
+
+  setDownloadProgress: (id: string, percentual: number) => {
+    getWindow().webContents.send('download-progress', id, percentual);
+  },
+
+  logger(message: string | object) {
+    console.log(message);
+    getWindow().webContents.send('log-event', message);
+  },
+
   listen() {
     ipcMain.handle('queryUrl', (_event, url: string) => queryUrl(url));
     ipcMain.handle('downloadList', async (_event, list) => {

@@ -4,8 +4,8 @@ import axios from 'axios';
 import ffmpeg from 'fluent-ffmpeg';
 import { path as ffmpegPath } from '@ffmpeg-installer/ffmpeg';
 import Constants from '../../../node_modules/spotify-dl/util/constants.js';
-import logger from '../util/logger';
 import { Track } from '../../../src/types/index.js';
+import api from '../../api';
 
 ffmpeg.setFfmpegPath(ffmpegPath.replace('app.asar', 'app.asar.unpacked'));
 ffmetadata.setFfmpegPath(ffmpegPath.replace('app.asar', 'app.asar.unpacked'));
@@ -35,7 +35,7 @@ const mergeMetadata = async (output: string, songData: Track) => {
     attachments: [coverFileName],
   };
 
-  logger({ metadata });
+  api.logger({ metadata });
 
   await new Promise((resolve, reject) => {
     ffmetadata.write(output, metadata, {}, function (err) {
@@ -47,10 +47,10 @@ const mergeMetadata = async (output: string, songData: Track) => {
     });
   });
 
-  logger({ output });
+  api.logger({ output });
 
   const tempPath = output.slice(0, output.length - 3) + 'temp.mp3';
-  logger({ tempPath });
+  api.logger({ tempPath });
   await new Promise((resolve, reject) => {
     ffmpeg()
       .on('error', (err) => {
@@ -77,7 +77,7 @@ const mergeMetadata = async (output: string, songData: Track) => {
   fs.unlinkSync(output);
   fs.renameSync(tempPath, output);
   fs.unlinkSync(coverFileName);
-  logger('Metadata Merged!\n');
+  api.logger('Metadata Merged!\n');
 };
 
 export default mergeMetadata;
