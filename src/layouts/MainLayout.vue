@@ -29,7 +29,7 @@
           Help
           <q-menu auto-close>
             <q-list dense style="min-width: 100px">
-              <q-item clickable @click="teste">
+              <q-item clickable @click="openHomePage">
                 <q-item-section>Homepage</q-item-section>
               </q-item>
               <q-separator />
@@ -92,6 +92,12 @@ export default defineComponent({
       about() {
         if (process.env.MODE === 'electron') {
           window.header.about();
+        }
+      },
+
+      openHomePage() {
+        if (process.env.MODE === 'electron') {
+          window.header.openHomePage();
         }
       },
     };

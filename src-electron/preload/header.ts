@@ -1,4 +1,4 @@
-import { BrowserWindow, dialog, app } from '@electron/remote';
+import { BrowserWindow, dialog, app, shell } from '@electron/remote';
 
 export interface IHeader {
   version: string;
@@ -6,6 +6,7 @@ export interface IHeader {
   toggleMaximize(): void;
   close(): void;
   about(): void;
+  openHomePage(): void;
 }
 
 const header: IHeader = {
@@ -35,11 +36,15 @@ const header: IHeader = {
         title: app.getName(),
         message: app.getName(),
         detail: `
-              Version: ${app.getVersion()}\n
-              Author: Jackson Belizário\n
-            `,
+          Version: ${app.getVersion()}\n
+          Author: Jackson Belizário\n
+        `,
       }
     );
+  },
+
+  openHomePage() {
+    shell.openExternal('https://github.com/JacksonBelizario/SpotifyDownloader');
   },
 
   version: app.getVersion(),
