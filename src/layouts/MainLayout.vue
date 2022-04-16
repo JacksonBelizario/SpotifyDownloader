@@ -75,28 +75,30 @@ export default defineComponent({
   name: 'MainLayout',
 
   setup() {
+    const isElectronMode = process.env.MODE === 'electron';
+
     return {
-      version: process.env.MODE === 'electron' ? window.header.version : '',
+      version: isElectronMode ? window.header.version : '',
       minimize() {
-        if (process.env.MODE === 'electron') {
+        if (isElectronMode) {
           window.header.minimize();
         }
       },
 
       closeApp() {
-        if (process.env.MODE === 'electron') {
+        if (isElectronMode) {
           window.header.close();
         }
       },
 
       about() {
-        if (process.env.MODE === 'electron') {
+        if (isElectronMode) {
           window.header.about();
         }
       },
 
       openHomePage() {
-        if (process.env.MODE === 'electron') {
+        if (isElectronMode) {
           window.header.openHomePage();
         }
       },
