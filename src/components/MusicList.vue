@@ -52,7 +52,9 @@
     <template #header-cell-options="props">
       <q-th :props="props">
         <q-checkbox
-          v-if="!track.tracks.find((i) => i.downloading)"
+          v-if="
+            track.tracks.length > 0 && !track.tracks.find((i) => i.downloading)
+          "
           v-model="props.selected"
         />
       </q-th>
