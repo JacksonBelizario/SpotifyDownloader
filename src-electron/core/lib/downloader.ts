@@ -110,6 +110,36 @@ const getYoutubeDLConfig = (): ytdl.downloadOptions => {
   return youtubeDLConfig;
 };
 
+const ytDownload = async (id: string, link: string, output: string) => {
+  const complexFilter = await sponsorComplexFilter(link);
+
+  await new Promise((resolve, reject) => {
+    const download = ytdl(link, getYoutubeDLConfig());
+
+    download.on('progress', (_, downloaded, total) =>
+      progressFunction(id, downloaded, total)
+    );
+
+    const ffmpegCommand = ffmpeg({ timeout: TIMEOUT_MINUTES * 60 });
+
+    if (complexFilter) {
+      ffmpegCommand.complexFilter(complexFilter).map('[outa]');
+    }
+
+    ffmpegCommand
+      .on('error', (e) => {
+        reject(e);
+      })
+      .on('end', () => {
+        resolve(true);
+      })
+      .input(download)
+      .audioBitrate(256)
+      .save(`${output}`)
+      .format('mp3');
+  });
+};
+
 /**
  * This function downloads the given youtube video
  * in best audio format as mp3 file
@@ -125,38 +155,18 @@ const downloader = async (
   let attemptCount = 0;
   let downloadSuccess = false;
   while (attemptCount < youtubeLinks.length && !downloadSuccess) {
-    const link = youtubeLinks[attemptCount];
-    api.logger(`Trying youtube link ${attemptCount + 1}...`);
-    const complexFilter = await sponsorComplexFilter(link);
-
-    const doDownload = (resolve, reject) => {
-      const download = ytdl(link, getYoutubeDLConfig());
-      download.on('progress', (_, downloaded, total) =>
-        progressFunction(id, downloaded, total)
-      );
-      const ffmpegCommand = ffmpeg({ timeout: TIMEOUT_MINUTES * 60 });
-      if (complexFilter) {
-        ffmpegCommand.complexFilter(complexFilter).map('[outa]');
-      }
-      ffmpegCommand
-        .on('error', (e) => {
-          reject(e);
-        })
-        .on('end', () => {
-          resolve();
-        })
-        .input(download)
-        .audioBitrate(256)
-        .save(`${output}`)
-        .format('mp3');
-    };
-
     try {
-      await new Promise(doDownload);
+      const link = youtubeLinks[attemptCount];
+
+      api.logger(`Trying youtube link ${attemptCount + 1}: ${link}`);
+
+      await ytDownload(id, link, output);
       downloadSuccess = true;
+
       api.logger('Download completed.');
     } catch (e) {
       api.logger(`Youtube error retrying download: ${e.message}`);
+
       attemptCount++;
     }
   }
