@@ -72,7 +72,7 @@ const writeAlbumArt = async (
 
 const mergeMetadata = async (output: string, songData: Track) => {
   try {
-    api.logger(`Starting metadata merge: ${songData.name}`);
+    api.logger('INFO', `Starting metadata merge: ${songData.name}`);
 
     const coverFileName = output.slice(0, output.length - 3) + 'jpg';
 
@@ -89,13 +89,13 @@ const mergeMetadata = async (output: string, songData: Track) => {
       attachments: [coverFileName],
     };
 
-    api.logger(`Metadata: ${JSON.stringify(metadata, null, 2)}`);
+    api.logger('LOG', `Metadata: ${JSON.stringify(metadata, null, 2)}`);
 
     await writeMetadata(output, metadata);
 
     const tempPath = output.slice(0, output.length - 3) + 'temp.mp3';
 
-    api.logger(`Adding album art: ${coverFileName}`);
+    api.logger('LOG', `Adding album art: ${coverFileName}`);
 
     await writeAlbumArt(output, coverFileName, tempPath);
 
@@ -103,9 +103,9 @@ const mergeMetadata = async (output: string, songData: Track) => {
     fs.renameSync(tempPath, output);
     fs.unlinkSync(coverFileName);
 
-    api.logger(`Metadata Merged: ${songData.name}`);
+    api.logger('SUCCESS', `Metadata Merged: ${songData.name}`);
   } catch (err) {
-    api.logger(`Metadata Merged failed: ${err}`);
+    api.logger('ERROR', `Metadata Merged failed: ${err}`);
   }
 };
 

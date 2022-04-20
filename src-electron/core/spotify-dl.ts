@@ -39,11 +39,10 @@ const download = async (output: string, nextItem: Track) => {
   const albumName = nextItem.album_name;
   const artistName = nextItem.artists[0];
 
-  api.logger(`
-    Artist: ${artistName}\n
-    Album: ${albumName}\n
-    Item: ${itemName}
-  `);
+  api.logger(
+    'INFO',
+    `Starting download:\n${JSON.stringify(nextItem, null, 2)}`
+  );
 
   const ytLinks = nextItem.URL
     ? [nextItem.URL]
@@ -72,7 +71,7 @@ const download = async (output: string, nextItem: Track) => {
 };
 
 export const downloadList = async (output: string, items: Track[]) => {
-  api.logger(`Total Items: ${items.length}`);
+  api.logger('INFO', `Total Items: ${items.length}`);
 
   const concurrentDownloads = getSettings().concurrentDownloads;
   const chunkedItems = chunkArray(items, concurrentDownloads);
@@ -81,7 +80,7 @@ export const downloadList = async (output: string, items: Track[]) => {
     await Promise.all(items.map((item) => download(output, item)));
   }
 
-  api.logger(`Finished processing ${items.length}!`);
+  api.logger('SUCCESS', `Finished processing ${items.length}!`);
 };
 
 export async function queryUrl(URL: string) {

@@ -158,14 +158,14 @@ const downloader = async (
     try {
       const link = youtubeLinks[attemptCount];
 
-      api.logger(`Trying youtube link ${attemptCount + 1}: ${link}`);
+      api.logger('WARN', `Trying youtube link ${attemptCount + 1}: ${link}`);
 
       await ytDownload(id, link, output);
       downloadSuccess = true;
 
-      api.logger('Download completed.');
+      api.logger('SUCCESS', 'Download completed.');
     } catch (e) {
-      api.logger(`Youtube error retrying download: ${e.message}`);
+      api.logger('ERROR', `Youtube error retrying download: ${e.message}`);
 
       attemptCount++;
     }

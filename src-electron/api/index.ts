@@ -3,6 +3,16 @@ import { Track } from '../../src/types';
 import { downloadList, queryUrl } from '../core/spotify-dl';
 import * as settings from '../core/util/settings';
 
+type LoggerLevel = 'ERROR' | 'SUCCESS' | 'WARN' | 'INFO' | 'LOG';
+
+const LoggerLevels = {
+  ERROR: '[41m[30m ERROR [39m[49m ',
+  SUCCESS: '[42m[30m SUCCESS [39m[49m ',
+  WARN: '[43m[30m WARNING [39m[49m ',
+  INFO: '[44m[30m INFO [39m[49m ',
+  LOG: '',
+};
+
 const getWindow = (): BrowserWindow =>
   BrowserWindow.getFocusedWindow() || BrowserWindow.getAllWindows()[0];
 
@@ -22,9 +32,10 @@ export default {
     getWindow().webContents.send('download-progress', id, percentual);
   },
 
-  logger(message: string | object) {
-    console.log(message);
-    getWindow().webContents.send('log-event', message);
+  logger(level: LoggerLevel, message: string) {
+    const log = LoggerLevels[level] + message;
+    console.log(log);
+    getWindow().webContents.send('log-event', log);
   },
 
   listen() {
