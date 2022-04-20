@@ -7,7 +7,7 @@
             <q-form ref="form" @submit="queryUrl">
               <q-input
                 outlined
-                v-model="url"
+                v-model="track.url"
                 label="URL"
                 placeholder="https://open.spotify.com/playlist/xyz"
                 :rules="[
@@ -24,7 +24,7 @@
               >
                 <template #append>
                   <q-btn
-                    :disable="!url"
+                    :disable="!track.url"
                     round
                     dense
                     flat
@@ -49,15 +49,17 @@
 import MusicList from 'components/MusicList.vue';
 import { defineComponent, ref } from 'vue';
 import { QForm } from 'quasar';
+import { useTrackStore } from '../stores/track';
 
 export default defineComponent({
   name: 'IndexPage',
   components: { MusicList },
   setup() {
+    const track = useTrackStore();
+
     const form = ref<QForm | null>(null);
-    const url = ref<string | null>(null);
     return {
-      url,
+      track,
       form,
 
       queryUrl: async () => {
@@ -65,7 +67,7 @@ export default defineComponent({
           return;
         }
         if (process.env.MODE === 'electron') {
-          window.downloader.queryUrl(url.value || '');
+          window.downloader.queryUrl(track.url || '');
         }
       },
       validURL(str: string) {

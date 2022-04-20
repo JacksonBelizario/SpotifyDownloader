@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { Track } from 'src/types';
 
 interface ILoggerState {
+  url: string | null;
   rawTracks: Track[];
   rawSelected: Track[];
 }
@@ -9,6 +10,7 @@ interface ILoggerState {
 export const useTrackStore = defineStore({
   id: 'track',
   state: (): ILoggerState => ({
+    url: null,
     rawTracks: [],
     rawSelected: [],
   }),
