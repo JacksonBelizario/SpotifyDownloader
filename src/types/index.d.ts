@@ -31,6 +31,7 @@ export interface TrackList {
 
 export interface Settings {
   outputOnly: boolean;
+  injectMetadata: boolean;
   concurrentDownloads: number;
 }
 

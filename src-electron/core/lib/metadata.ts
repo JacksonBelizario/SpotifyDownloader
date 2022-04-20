@@ -20,23 +20,15 @@ const downloadAndSaveCover = async function (uri: string, filename: string) {
   cover.data.pipe(writer);
 };
 
-const mergeMetadata = async (output: string, songData: Track) => {
-  const coverFileName = output.slice(0, output.length - 3) + 'jpg';
-  let coverURL = songData.cover_url;
-  if (!coverURL) {
-    coverURL = Constants.YOUTUBE_SEARCH.GENERIC_IMAGE;
-  }
-  await downloadAndSaveCover(coverURL, coverFileName);
-  const metadata = {
-    artist: songData.artists,
-    album: songData.album_name,
-    title: songData.name,
-    date: songData.release_date,
-    attachments: [coverFileName],
-  };
+interface Metadata {
+  artist: string[];
+  album: string;
+  title: string;
+  date: string;
+  attachments: string[];
+}
 
-  api.logger({ metadata });
-
+const writeMetadata = async (output: string, metadata: Metadata) => {
   await new Promise((resolve, reject) => {
     ffmetadata.write(output, metadata, {}, function (err) {
       if (err) {
@@ -46,11 +38,13 @@ const mergeMetadata = async (output: string, songData: Track) => {
       }
     });
   });
+};
 
-  api.logger({ output });
-
-  const tempPath = output.slice(0, output.length - 3) + 'temp.mp3';
-  api.logger({ tempPath });
+const writeAlbumArt = async (
+  output: string,
+  coverFileName: string,
+  path: string
+) => {
   await new Promise((resolve, reject) => {
     ffmpeg()
       .on('error', (err) => {
@@ -72,12 +66,47 @@ const mergeMetadata = async (output: string, songData: Track) => {
         '-id3v2_version',
         '3'
       )
-      .save(tempPath);
+      .save(path);
   });
-  fs.unlinkSync(output);
-  fs.renameSync(tempPath, output);
-  fs.unlinkSync(coverFileName);
-  api.logger('Metadata Merged!\n');
+};
+
+const mergeMetadata = async (output: string, songData: Track) => {
+  try {
+    api.logger(`Starting metadata merge: ${songData.name}`);
+
+    const coverFileName = output.slice(0, output.length - 3) + 'jpg';
+
+    const coverURL =
+      songData.cover_url || Constants.YOUTUBE_SEARCH.GENERIC_IMAGE;
+
+    await downloadAndSaveCover(coverURL, coverFileName);
+
+    const metadata: Metadata = {
+      artist: songData.artists,
+      album: songData.album_name,
+      title: songData.name,
+      date: songData.release_date,
+      attachments: [coverFileName],
+    };
+
+    api.logger(`Metadata: ${JSON.stringify(metadata, null, 2)}`);
+
+    await writeMetadata(output, metadata);
+
+    const tempPath = output.slice(0, output.length - 3) + 'temp.mp3';
+
+    api.logger(`Adding album art: ${coverFileName}`);
+
+    await writeAlbumArt(output, coverFileName, tempPath);
+
+    fs.unlinkSync(output);
+    fs.renameSync(tempPath, output);
+    fs.unlinkSync(coverFileName);
+
+    api.logger(`Metadata Merged: ${songData.name}`);
+  } catch (err) {
+    api.logger(`Metadata Merged failed: ${err}`);
+  }
 };
 
 export default mergeMetadata;

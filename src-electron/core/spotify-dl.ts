@@ -60,9 +60,9 @@ const download = async (output: string, nextItem: Track) => {
 
   const downloadSuccessful = await downloader(itemId, ytLinks, outputFilePath);
 
-  api.logger({ ytLinks, outputFilePath, downloadSuccessful });
+  const injectMetadata = getSettings().injectMetadata;
 
-  if (downloadSuccessful) {
+  if (downloadSuccessful && injectMetadata) {
     await mergeMetadata(outputFilePath, nextItem);
   }
 

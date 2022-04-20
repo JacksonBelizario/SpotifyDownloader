@@ -11,6 +11,9 @@ export const getSettings = (): Settings => ({
   outputOnly: (storage.get('outputOnly') != undefined
     ? storage.get('outputOnly')
     : true) as boolean,
+  injectMetadata: (storage.get('injectMetadata') != undefined
+    ? storage.get('injectMetadata')
+    : true) as boolean,
   concurrentDownloads: (storage.get('concurrentDownloads') != undefined
     ? storage.get('concurrentDownloads')
     : 10) as number,

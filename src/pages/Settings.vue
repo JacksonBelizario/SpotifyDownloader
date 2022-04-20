@@ -9,10 +9,21 @@
     <q-list dense>
       <q-item tag="label" v-ripple>
         <q-item-section>
-          <q-item-label>Output Only</q-item-label>
+          <q-item-label>
+            Download all songs in the root output dir only
+          </q-item-label>
         </q-item-section>
         <q-item-section side>
           <q-toggle v-model="settings.outputOnly" val="output-only" />
+        </q-item-section>
+      </q-item>
+
+      <q-item tag="label" v-ripple>
+        <q-item-section>
+          <q-item-label>Inject media metadata tags and album art</q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-toggle v-model="settings.injectMetadata" val="inject-metadata" />
         </q-item-section>
       </q-item>
 
