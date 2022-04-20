@@ -20,7 +20,7 @@
 
       <q-item tag="label" v-ripple>
         <q-item-section>
-          <q-item-label>Inject media metadata tags and album art</q-item-label>
+          <q-item-label>Inject media tags and album art</q-item-label>
         </q-item-section>
         <q-item-section side>
           <q-toggle v-model="settings.injectMetadata" val="inject-metadata" />
