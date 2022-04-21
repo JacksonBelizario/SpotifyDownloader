@@ -1,6 +1,6 @@
 # Spotify Downloader
 
-SpotifyDownloader is a Desktop Application to download Spotify playlists and songs using YouTube with album art and metadata
+SpotifyDownloader is a simple Desktop Application to download Spotify playlists and songs using YouTube with album art and metadata
 
 ## Download
 
@@ -10,6 +10,11 @@ SpotifyDownloader is a Desktop Application to download Spotify playlists and son
 
 ![selection](./screenshots/selection.png)
 ![download](./screenshots/download.png)
+
+## Notes
+
+- App made with [Electron](https://www.electronjs.org/), based on commandline utility [spotifydl](https://github.com/SwapnilSoni1999/spotify-dl).
+- No need to configure or install external programs, such as [FFMPEG](https://ffmpeg.org/download.html), as it is already included via [@ffmpeg-installer/ffmpeg](https://www.npmjs.com/package/@ffmpeg-installer/ffmpeg).
 
 ## Compiling Project
 

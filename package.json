@@ -1,6 +1,6 @@
 {
   "name": "spotify-downloader",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "SpotifyDownloader is a Desktop Application to download Spotify playlists and songs using YouTube",
   "productName": "Spotify Downloader",
   "author": "Jackson Belizário <jacksonluizzb@gmail.com>",
