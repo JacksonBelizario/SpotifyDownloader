@@ -7,7 +7,7 @@ import api from './api';
 initialize();
 
 // needed in case process is undefined under Linux
-const platform = process.platform || os.platform();
+const platform: NodeJS.Platform = process.platform || os.platform();
 
 try {
   if (platform === 'win32' && nativeTheme.shouldUseDarkColors === true) {
@@ -17,7 +17,7 @@ try {
   }
 } catch (_) {}
 
-let mainWindow;
+let mainWindow: BrowserWindow;
 
 function createWindow() {
   /**
