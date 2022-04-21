@@ -96,10 +96,12 @@
       <q-btn
         outline
         color="primary"
-        label="Download"
         :disabled="track.selected.length === 0"
         @click="download"
-      />
+      >
+        Download
+        {{ track.selected.length > 0 ? `(${track.selected.length})` : '' }}
+      </q-btn>
     </template>
   </q-table>
 </template>
