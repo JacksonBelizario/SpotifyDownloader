@@ -1,0 +1,43 @@
+name: Build and Deploy
+
+on:
+  create:
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - windows-latest
+      max-parallel: 1
+      fail-fast: false
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+
+      - name: Install dependencies
+        run: yarn --frozen-lockfile
+
+      - name: Build
+        run: yarn build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: './dist/electron/Packaged/*.exe'
+          body: Spotify Downloader ${{ github.ref_name }}
+          tag: ${{ github.ref_name }}
+          draft: true
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
