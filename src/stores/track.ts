@@ -5,7 +5,53 @@ interface ILoggerState {
   url: string | null;
   rawTracks: Track[];
   rawSelected: Track[];
+  loading: number;
 }
+
+class FakeProgress {
+  interval: NodeJS.Timeout | null;
+  current_progress: number;
+  step: number;
+  loading: number;
+  cb!: (progress: number) => void;
+
+  constructor() {
+    this.interval = null;
+    this.current_progress = 0;
+    this.step = 0.3;
+    this.loading = 0;
+  }
+
+  start(callback: (progress: number) => void) {
+    this.cb = callback;
+    this.step = 0.3;
+    this.interval = setInterval(() => {
+      this.current_progress += this.step;
+      this.loading =
+        Math.round(
+          (Math.atan(this.current_progress) / (Math.PI / 2)) * 100_000
+        ) / 10_0000;
+      if (this.loading >= 1.0) {
+        if (this.interval) clearInterval(this.interval);
+      } else if (this.loading >= 0.5) {
+        this.step = 0.1;
+      }
+      this.cb(this.loading);
+    }, 100);
+  }
+
+  stop() {
+    if (this.interval) clearInterval(this.interval);
+    this.loading = 1.0;
+    this.cb(this.loading);
+    setTimeout(() => {
+      this.loading = 0;
+      this.cb(this.loading);
+    }, 2_200);
+  }
+}
+
+const fakeProgress = new FakeProgress();
 
 export const useTrackStore = defineStore({
   id: 'track',
@@ -13,6 +59,7 @@ export const useTrackStore = defineStore({
     url: null,
     rawTracks: [],
     rawSelected: [],
+    loading: 0,
   }),
   getters: {
     tracks: (state) => state.rawTracks,
@@ -38,6 +85,7 @@ export const useTrackStore = defineStore({
           this.rawTracks.push(track);
         }
       }
+      this.stopLoading();
     },
     changeProgress(itemId: string, progress: number) {
       const idx = this.rawTracks.findIndex(({ id }) => id === itemId);
@@ -56,6 +104,14 @@ export const useTrackStore = defineStore({
           filePath,
         });
       }
+    },
+    startLoading() {
+      fakeProgress.start((progress) => {
+        this.loading = progress;
+      });
+    },
+    stopLoading() {
+      fakeProgress.stop();
     },
   },
 });

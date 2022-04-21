@@ -86,7 +86,7 @@
       <div class="full-width row flex-center text-accent q-gutter-sm">
         <q-icon size="2em" name="mdi-lightbulb-on-outline " />
         <span>
-          Enter Track, Playlist, Album and Artist Spotify URL to start download
+          Enter Track, Playlist, Album or Artist Spotify URL to start download
         </span>
       </div>
     </template>

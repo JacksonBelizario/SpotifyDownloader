@@ -36,6 +36,14 @@
             </q-form>
           </q-card-section>
         </q-card>
+        <q-linear-progress
+          v-if="track.loading"
+          :value="track.loading"
+          dark
+          stripe
+          color="secondary"
+          :style="{ marginTop: '-4px' }"
+        />
         <q-separator />
       </div>
       <div class="col-12">
@@ -66,6 +74,7 @@ export default defineComponent({
         if (!(await (form.value && form.value.validate()))) {
           return;
         }
+        track.startLoading();
         if (process.env.MODE === 'electron') {
           window.downloader.queryUrl(track.url || '');
         }
