@@ -186,7 +186,7 @@ module.exports = configure(function (/* ctx */) {
 
         appId: 'spotify-downloader',
         win: {
-          target: 'portable',
+          target: 'nsis',
         },
       },
     },

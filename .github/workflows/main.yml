@@ -3,7 +3,7 @@ name: Build and Deploy
 on:
   create:
     tags:
-      - '*'
+      - v*
 
 jobs:
   build:
@@ -38,6 +38,7 @@ jobs:
           artifacts: './dist/electron/Packaged/*.exe'
           body: Spotify Downloader ${{ github.ref_name }}
           tag: ${{ github.ref_name }}
-          draft: true
+          draft: false
           prerelease: false
+          allowUpdates: true
           token: ${{ secrets.GITHUB_TOKEN }}
